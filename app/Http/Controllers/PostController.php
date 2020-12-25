@@ -4,17 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
-class PostController extends Controller
+class PostController extends BaseController
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $request->perpage ? $perPage = $request->perpage : $perPage = 10;
+        $posts = DB::table('posts')->paginate($perPage);
+        $posts->withPath('/api/posts'.(($request->perpage) ? '?perpage='.$request->perpage : ''));
+        return response()->json($posts);
     }
 
     /**
